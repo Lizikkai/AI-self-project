@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node", // 确保模块解析策略为 Node
+    "types": ["@types/node", "vite/client"], // 明确包含所需类型
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"] // 路径别名（如果使用）
+    },
+    "allowJs": true, // 允许编译 JS 文件
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true // 跳过第三方库类型检查（可选）
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue" // 包含 Vue 文件
+  ],
+  "exclude": ["node_modules"]
+}
