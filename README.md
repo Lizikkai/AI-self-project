@@ -1,10 +1,109 @@
-<<<<<<< HEAD
-# Vue 3 + Vite
+# 用户管理系统
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+基于 Vue 3 + TypeScript + Vite + Ant Design Vue 的用户管理系统。
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
-=======
-# AI-self-project
-这是一个自主搭建的简单后台，前后端一体，期望内置任意一款AI工具在里边，目前包含登录、注册等简易功能
->>>>>>> 3ca74a13a8805ac3b02ec0653f0ebe158ee92f90
+## 技术栈
+
+- 前端框架：Vue 3
+- 构建工具：Vite
+- UI 组件库：Ant Design Vue
+- 状态管理：Pinia
+- 路由管理：Vue Router
+- HTTP 请求：Axios
+- 开发语言：TypeScript
+- 后端框架：Express
+- 数据库：MySQL
+
+## 项目结构
+
+```bash
+src/
+├── api/              # API 接口
+├── assets/           # 静态资源
+├── components/       # 公共组件
+├── router/          # 路由配置
+├── store/           # 状态管理
+├── types/           # TypeScript 类型定义
+├── utils/           # 工具函数
+└── views/           # 页面组件
+```
+
+## 环境配置
+### 开发环境要求
+* Node.js >= 18
+* pnpm >= 7
+* MySql >= 5.7
+
+### 环境变量
+在项目根目录创建`.env`文件:
+```env
+VITE_API_BASE_URL=http://localhost:14258
+JWT_SECRET=your_jwt_secret
+```
+
+## 项目配置
+### TypeScript配置
+`tsconfig.json`主要配置:
+```json
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+### Vite 配置
+`vite.config.ts`的主要配置:
+```ts
+{
+  plugins: [
+    vue(),
+    UnoCSS()
+  ],
+  server: {
+    port:8080,
+    proxy: {
+      '/api': {
+        target: "http://localhost:14258",
+        changeOrigin: true,
+        rewrite: (path) => path
+      }
+    },
+    cors: true,
+  },
+  resolve: {
+    alias: {
+      '@/views': resolve(__dirname, '.', 'src/views'),
+      '@/utils': resolve(__dirname, '.','src/utils'),
+      '@/api': resolve(__dirname, '.','src/api'),
+      '@/store': resolve(__dirname, '.','src/store'),
+      '@/router': resolve(__dirname, '.','src/router'),
+      '@/components': resolve(__dirname, '.','src/components'),
+    },
+  },
+}
+```
+
+### 开发指南
+## 安装依赖
+```bash
+pnpm install
+```
+
+### 启动开发服务器
+```bash
+pnpm dev
+```
+
+### 构建生产版本
+```bash
+pnpm build
+```

@@ -1,12 +1,13 @@
 <template>
   <Table :columns="columns" :data-source="userList" :loading="loading">
-    <template #tableTitle>
+    <template #title>
       <div class="flex flex-row flex-items-center justify-between">
         <span>共{{ userList.length }}位用户</span>
         <Button type="primary" @click="handleAddUser">
           <template #icon>
             <PlusOutlined />
           </template>
+          <span>添加用户</span>
         </Button>
       </div>
     </template>
