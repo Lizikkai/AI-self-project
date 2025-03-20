@@ -321,6 +321,30 @@ app.get('/api/user/list', verifyToken, async (req,res) => {
   }
 })
 
+// 通过个人的用户id获取个人信息接口
+app.get('/api/user/personal', verifyToken, async (req,res) => {
+  try {
+    // console.log("req",req)
+    const { id } = req.query; // 从url中获取参数
+    const [rows] = await pool.query(
+      "SELECT id, name, email, mobile, password, isAdmin FROM user_info.info WHERE id = ?", [id]
+    )
+    if(rows.length > 0) {
+      return res.status(200).json({
+        code: 0,
+        message: "获取用户信息成功",
+        content: rows[0]
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      code: 1,
+      message: "获取用户信息失败",
+      content: null
+    })
+  }
+})
+
 // 启动服务器
 app.listen(14258,() => {
   console.log(`服务器运行`);

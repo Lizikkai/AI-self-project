@@ -32,3 +32,11 @@ export function getUserList(): Promise<Types.IUserListData> {
     method: "get",
   })
 }
+
+/** 获取个人信息 */
+export function getUserInfo(params: { id: number }): Promise<Types.IGetUserInfoData> {
+  return request({
+    url: `user/personal?id=${params.id}`,
+    method: "get",
+  })
+}
