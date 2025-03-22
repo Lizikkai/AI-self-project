@@ -57,6 +57,7 @@
         onOk:() => {
           // userInfoStore.$reset()
           localStorage.removeItem("userInfo")
+          localStorage.removeItem('selected-menu-key')
           removeToken()
           message.success("退出登录成功")
           router.replace({ name: "LoginPage" })

@@ -14,21 +14,30 @@
     <template #bodyCell="{ column, record }">
       <template v-if="column.dataIndex === 'action'">
         <template v-if="record.id !== userInfoStore.userInfo.userId">
-          <Button type="link" @click="handleEditUser(record.id)">编辑</Button>
-          <Button type="link">删除</Button>
+          <Button :disabled="userInfoStore.userInfo.isAdmin === 0" type="link" @click="handleEditUser(record.id)">编辑</Button>
+          <Button :disabled="userInfoStore.userInfo.isAdmin === 0" type="link">删除</Button>
         </template>
+      </template>
+      <template v-else-if="column.dataIndex === 'isAdmin'">
+        <span>{{ record.isAdmin === 1 ? '是' : '否' }}</span>
       </template>
     </template>
   </Table>
-  <AddOrEditUserModal ref="modalRef" :id="currentEditUserId" v-model:open="open" @confirm="handleConfirm" @cancel="handleCancel" />
+  <AddOrEditUserModal
+    ref="modalRef"
+    :id="currentEditUserId"
+    v-model:open="open"
+    @confirm="handleConfirm"
+    @cancel="handleCancel"
+  />
 </template>
 
 <script setup lang="ts">
   import { ref, onMounted } from 'vue'
   import { Table, Button, message } from 'ant-design-vue'
-  import { getUserList, updateUserInfo } from '@/api/index'
+  import { getUserList, updateUserInfoByAdmin } from '@/api/index'
   import { columns } from './data'
-  import { IUpdateUserInfoParams, IUserListData } from '@/api/model'
+  import { IUserListItem, IUserListData } from '@/api/model'
   import { useUserInfo } from '@/store/user'
   import { PlusOutlined } from '@ant-design/icons-vue'
   import AddOrEditUserModal from '@/components/AddOrEditUserModal/index.vue'
@@ -60,23 +69,21 @@
     open.value = true
   }
 
-  function handleEditUser(id:number) {
+  function handleEditUser(id: number) {
     currentEditUserId.value = id
     open.value = true
   }
 
-  function handleConfirm() {
-    if(modalRef.value) {
-      console.log("modalRef.value",modalRef.value.formState)
-      const state = modalRef.value.formState
-      const body = {
-        ...state
-      } as IUpdateUserInfoParams
-      updateUserInfo(body).then(() => {
-        message.success("更新成功")
-        open.value = false
-      })
-    }
+  function handleConfirm($event:IUserListItem) {
+    const body = {
+      ...$event
+    } as IUserListItem
+    console.log(body)
+    updateUserInfoByAdmin(body).then(() => {
+      message.success('更新成功')
+      open.value = false
+      fetchUserList()
+    })
   }
 
   function handleCancel() {

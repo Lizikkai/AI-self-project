@@ -4,6 +4,9 @@ export type ILoginParams = {
 }
 
 export type ILoginData = {
+  email: string
+  isAdmin: number
+  mobile: string
   name: string
   password: string
   userId: number

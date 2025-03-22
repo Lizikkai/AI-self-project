@@ -10,7 +10,7 @@ interface UserState {
     userId?:number;
     email?:string;
     mobile?:string;
-    isAdmin?: number;
+    isAdmin: number;
   }
 }
 
@@ -21,7 +21,9 @@ interface LoginOptions {
 export const useUserInfo = defineStore("userInfo", {
   state: ():UserState => {
     return {
-      userInfo: {}
+      userInfo: {
+        isAdmin: 0
+      }
     }
   },
   persist: true,

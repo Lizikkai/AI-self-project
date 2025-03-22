@@ -40,3 +40,12 @@ export function getUserInfo(params: { id: number }): Promise<Types.IGetUserInfoD
     method: "get",
   })
 }
+
+/** 用于管理员更新用户信息 */
+export function updateUserInfoByAdmin(data: Types.IUserListItem): Promise<unknown> {
+  return request({
+    url: "admin/update",
+    method: "post",
+    data
+  })
+}

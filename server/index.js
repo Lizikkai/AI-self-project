@@ -287,6 +287,12 @@ app.post('/api/user/update', verifyToken,async (req,res) => {
         message: "个人信息更新成功",
         content: null
       })
+    }else {
+      return res.status(400).json({
+        code: 1,
+        message: "更新失败，未找到对应用户",
+        content: null
+      });
     }
 
   } catch (error) {
@@ -342,6 +348,87 @@ app.get('/api/user/personal', verifyToken, async (req,res) => {
       message: "获取用户信息失败",
       content: null
     })
+  }
+})
+
+app.post('/api/admin/update', verifyToken, async(req, res) => {
+  try {
+    const { id, name, email, mobile, password, isAdmin } = req.body;
+    // 验证是否为管理员
+    const adminId = req.user.userId;
+    const [adminCheck] = await pool.query(
+      "SELECT isAdmin FROM user_info.info WHERE id =?", [adminId]
+    )
+    console.log("admin",adminCheck)
+    if(!adminCheck.length || adminCheck[0].isAdmin !== 1) {
+      return res.status(403).json({
+        code: 1,
+        message: "仅管理员可修改用户信息",
+        content: null
+      })
+    }
+    if(!id) {
+      return res.status(400).json({
+        code: 1,
+        message: "用户id不能为空",
+        content: null
+      })
+    }
+    // 构建更新字段
+    const updateFields = [];
+    const updateValues = [];
+    if(name) {
+      updateFields.push('name =?');
+      updateValues.push(name);
+    }
+    if(email) {
+      updateFields.push('email =?');
+      updateValues.push(email);
+    }
+    if(mobile) {
+      updateFields.push('mobile =?');
+      updateValues.push(mobile);
+    }
+    if(password) {
+      updateFields.push('password =?');
+      updateValues.push(password);
+    }
+    if(typeof isAdmin === 'number') {
+      updateFields.push('isAdmin =?');
+      updateValues.push(isAdmin);
+    }else {
+      return res.status(400).json({
+        code: 1,
+        message: "是否管理员参数错误",
+        content: null
+      })
+    }
+    // 添加用户ID到更新值数组
+    updateValues.push(id);
+    const [result] = await pool.query(
+      `UPDATE user_info.info SET ${updateFields.join(', ')} WHERE id =?`,
+      updateValues
+    );
+    console.log("result",result)
+    if(result.affectedRows === 1) {
+      return res.status(200).json({
+        code: 0,
+        message: "个人信息更新成功",
+        content: null
+      })
+    }else {
+      return res.status(400).json({
+        code: 1,
+        message: "更新失败，未找到对应用户",
+        content: null
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      code: 1,
+      message: '服务器错误,请稍后再试',
+      content: null
+    });
   }
 })
 
