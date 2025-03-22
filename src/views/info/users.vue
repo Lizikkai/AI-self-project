@@ -15,7 +15,9 @@
       <template v-if="column.dataIndex === 'action'">
         <template v-if="record.id !== userInfoStore.userInfo.userId">
           <Button :disabled="userInfoStore.userInfo.isAdmin === 0" type="link" @click="handleEditUser(record.id)">编辑</Button>
-          <Button :disabled="userInfoStore.userInfo.isAdmin === 0" type="link">删除</Button>
+          <Popconfirm title="确定是否要删除该用户" ok-text="确定" cancel-text="取消" @confirm="handleDeleteUser(record.id)">
+            <Button :disabled="userInfoStore.userInfo.isAdmin === 0" type="link">删除</Button>
+          </Popconfirm>
         </template>
       </template>
       <template v-else-if="column.dataIndex === 'isAdmin'">
@@ -34,8 +36,8 @@
 
 <script setup lang="ts">
   import { ref, onMounted } from 'vue'
-  import { Table, Button, message } from 'ant-design-vue'
-  import { getUserList, updateUserInfoByAdmin } from '@/api/index'
+  import { Table, Button, message, Popconfirm } from 'ant-design-vue'
+  import { getUserList, updateUserInfoByAdmin, deleteUserByAdmin } from '@/api/index'
   import { columns } from './data'
   import { IUserListItem, IUserListData } from '@/api/model'
   import { useUserInfo } from '@/store/user'
@@ -72,6 +74,15 @@
   function handleEditUser(id: number) {
     currentEditUserId.value = id
     open.value = true
+  }
+
+  function handleDeleteUser(id: number) {
+    try {
+      deleteUserByAdmin({id}).then(() => {
+        message.success('删除成功')
+        fetchUserList()
+      })
+    } catch (error) {}
   }
 
   function handleConfirm($event:IUserListItem) {

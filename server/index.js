@@ -432,6 +432,47 @@ app.post('/api/admin/update', verifyToken, async(req, res) => {
   }
 })
 
+app.delete('/api/admin/delete', verifyToken, async(req,res) => {
+  try {
+    const { id } = req.query;
+    // 验证是否为管理员
+    const adminId = req.user.userId;
+    const [adminCheck] = await pool.query(
+      "SELECT isAdmin FROM user_info.info WHERE id =?", [adminId]
+    )
+    if(!adminCheck.length || adminCheck[0].isAdmin !== 1) {
+      return res.status(403).json({
+        code: 1,
+        message: "仅管理员可删除用户",
+        content: null
+      })
+    }
+    if(!id) {
+      return res.status(400).json({
+        code: 1,
+        message: "用户id不能为空",
+        content: null
+      })
+    }
+    const [result] = await pool.query(
+      "DELETE FROM user_info.info WHERE id =?", [id]
+    )
+    if(result.affectedRows === 1) {
+      return res.status(200).json({
+        code: 0,
+        message: "用户删除成功",
+        content: null
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      code: 1,
+      message: '服务器错误,请稍后再试',
+      content: null
+    });
+  }
+})
+
 // 启动服务器
 app.listen(14258,() => {
   console.log(`服务器运行`);

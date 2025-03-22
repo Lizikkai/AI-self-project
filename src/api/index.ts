@@ -49,3 +49,11 @@ export function updateUserInfoByAdmin(data: Types.IUserListItem): Promise<unknow
     data
   })
 }
+
+/** 管理员删除用户 */
+export function deleteUserByAdmin(params: PrimaryKey) {
+  return request({
+    url: `admin/delete?id=${params.id}`,
+    method: "delete",
+  })
+}
