@@ -3,6 +3,7 @@ import { message } from 'ant-design-vue'
 import { getToken, removeToken, setToken } from '@/utils/auth'
 import { whiteList } from '@/router/basic'
 import router from '@/router'
+import { removeSelectedMenuKey } from '@/utils/menu'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -63,7 +64,7 @@ request.interceptors.response.use(
       if(getToken()) {
         removeToken()
       }
-      localStorage.removeItem('selected-menu-key')
+      removeSelectedMenuKey()
       await router.replace({ name: 'LoginPage', replace: true })
       message.error(msg)
     }else {

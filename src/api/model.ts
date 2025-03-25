@@ -34,6 +34,15 @@ export type IUserListItem = {
   email: string
   mobile: string
   isAdmin: number
+  password?:string
 }
 
 export type IGetUserInfoData = IUserListItem & { password: string }
+
+export type ICreateUserByAdminParams = {
+  name: string
+  password: string
+  email: string
+  mobile: string
+  isAdmin: number
+}

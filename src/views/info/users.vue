@@ -37,12 +37,13 @@
 <script setup lang="ts">
   import { ref, onMounted } from 'vue'
   import { Table, Button, message, Popconfirm } from 'ant-design-vue'
-  import { getUserList, updateUserInfoByAdmin, deleteUserByAdmin } from '@/api/index'
+  import { getUserList, updateUserInfoByAdmin, deleteUserByAdmin, createUserByAdmin } from '@/api/index'
   import { columns } from './data'
-  import { IUserListItem, IUserListData } from '@/api/model'
+  import { IUserListItem,ICreateUserByAdminParams, IUserListData } from '@/api/model'
   import { useUserInfo } from '@/store/user'
   import { PlusOutlined } from '@ant-design/icons-vue'
   import AddOrEditUserModal from '@/components/AddOrEditUserModal/index.vue'
+  import * as dir from 'lodash-es'
 
   onMounted(() => {
     fetchUserList()
@@ -86,7 +87,9 @@
   }
 
   function handleConfirm($event:IUserListItem) {
-    const body = {
+    // 区分新增与编辑
+    if(currentEditUserId.value) {
+      const body = {
       ...$event
     } as IUserListItem
     console.log(body)
@@ -94,7 +97,16 @@
       message.success('更新成功')
       open.value = false
       fetchUserList()
-    })
+    })  
+    }else {
+      const body = dir.omit($event, 'id') as ICreateUserByAdminParams
+      console.log(body)
+      createUserByAdmin(body).then(() => {
+        message.success('新增成功')
+        open.value = false
+        fetchUserList()
+      })
+    }
   }
 
   function handleCancel() {

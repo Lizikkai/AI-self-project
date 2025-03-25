@@ -15,7 +15,7 @@
           </a>
           <template #overlay>
             <Menu>
-              <MenuItem key="profile">
+              <MenuItem key="profile" @click="handleToProfile">
                 <UserOutlined />
                 个人信息
               </MenuItem>
@@ -46,6 +46,7 @@
       SettingOutlined,
       LogoutOutlined
     } from "@ant-design/icons-vue";
+    import { setSelectedMenuKey, removeSelectedMenuKey } from '@/utils/menu'
 
     const router = useRouter()
     const userInfoStore = useUserInfo()
@@ -57,14 +58,17 @@
         onOk:() => {
           // userInfoStore.$reset()
           localStorage.removeItem("userInfo")
-          localStorage.removeItem('selected-menu-key')
+          removeSelectedMenuKey()
           removeToken()
           message.success("退出登录成功")
           router.replace({ name: "LoginPage" })
         }
       })
-      
-      // router.replace
+    }
+
+    function handleToProfile() {
+      setSelectedMenuKey('info')
+      router.push({ name: 'InfoPage' })
     }
 </script>
 
@@ -118,3 +122,4 @@
       background: #f0f2f5;
     }
 </style>
+@/utils/menu

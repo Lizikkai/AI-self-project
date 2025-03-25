@@ -26,41 +26,51 @@
 <script setup lang="ts">
     import { Menu, MenuItem, MenuDivider } from "ant-design-vue";
     import { SmileOutlined, HomeOutlined, UserOutlined } from "@ant-design/icons-vue";
-    import { ref, watch } from 'vue'
+    import { ref, watch, onMounted } from 'vue'
     import { menuRoutes } from '@/router/basic'
     import { useRouter, useRoute } from 'vue-router'
+    import { getSelectedMenuKey, setSelectedMenuKey } from '@/utils/menu'
   
     const router = useRouter()
     const route = useRoute()
-    const getCurrentRouteKey = () => {
-      const savedKey = localStorage.getItem("selected-menu-key")
-      console.log("savedKey",savedKey)
-      if(savedKey) return [savedKey]
-      const _path = route.path.replace('/','')
-      const path = _path ? _path : 'info'
-      return [path]
-    }
-    const selectedKeys = ref<string[]>(getCurrentRouteKey())
+    const selectedKeys = ref<string[]>(['info'])
 
-    watch(() => selectedKeys.value, newVal => {
-      console.log("newVal",newVal)
-      if(newVal && newVal[0]) {
-        localStorage.setItem('selected-menu-key',newVal[0])
-      }
-    },{immediate:true})
-
-    function handleSelectMenu(selection:any) {
-      console.log("key",selection.key)
-      const key = selection.key
-      if (key) {
-        const route = menuRoutes[key]
-        console.log("route",route)
-        if(route) router.push(route)
-      }
+    // 统一处理路由和菜单选中状态
+    function updateMenuState(path: string) {
+      const menuKey = path.replace('/', '') || 'info'
+      selectedKeys.value = [menuKey]
+      setSelectedMenuKey(menuKey)
     }
 
+    // 初始化
+    onMounted(() => {
+      const savedKey = getSelectedMenuKey()
+      if (savedKey) {
+        selectedKeys.value = [savedKey]
+        const targetRoute = menuRoutes[savedKey]
+        if (targetRoute && route.path !== targetRoute) {
+          router.push(targetRoute)
+        }
+      } else if (route.path === '/') {
+        router.push('/info')
+        updateMenuState('info')
+      } else {
+        updateMenuState(route.path)
+      }
+    })
 
+    // 监听路由变化
+    watch(() => route.path, (newPath) => {
+      updateMenuState(newPath)
+    })
 
+    // 处理菜单选择
+    function handleSelectMenu(selection: any) {
+      const route = menuRoutes[selection.key]
+      if (route) {
+        router.push(route)
+      }
+    }
 </script>
 
 <style scoped lang="less">
@@ -73,3 +83,4 @@
      }
     }
 </style>
+@/utils/menu

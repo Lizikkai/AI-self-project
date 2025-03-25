@@ -59,6 +59,15 @@ function handleDisconnect() {
 /** 中间件 校验token是否已过期 */
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+
+  if(!authHeader) {
+    return res.status(401).json({
+      code: 1,
+      message: '登录信息失效',
+      content: null
+    })
+  }
+
   // 移除可能重复的 Bearer 前缀
   const token = authHeader && authHeader.replace(/^Bearer\s+Bearer\s+/, 'Bearer ').split(' ')[1];
   if(!token) {
@@ -74,7 +83,14 @@ const verifyToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(403).json({
+    if(error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        code: 1,
+        message: '登录已过期',
+        content: null
+      });
+    }
+    return res.status(401).json({
       code: 1,
       message: '登录已过期',
       content: null
@@ -431,7 +447,7 @@ app.post('/api/admin/update', verifyToken, async(req, res) => {
     });
   }
 })
-
+/** 用于管理员删除用户 */
 app.delete('/api/admin/delete', verifyToken, async(req,res) => {
   try {
     const { id } = req.query;
@@ -461,6 +477,91 @@ app.delete('/api/admin/delete', verifyToken, async(req,res) => {
       return res.status(200).json({
         code: 0,
         message: "用户删除成功",
+        content: null
+      })
+    }
+  } catch (error) {
+    return res.status(500).json({
+      code: 1,
+      message: '服务器错误,请稍后再试',
+      content: null
+    });
+  }
+})
+
+app.put('/api/admin/create', verifyToken, async(req, res) => {
+  try {
+    const { name, email, mobile, password, isAdmin } = req.body;
+    if(!name) {
+      return res.status(400).json({
+        code: 1,
+        message: "用户名不能为空",
+        content: null
+      })
+    }
+    if(!email) {
+      return res.status(400).json({
+        code: 1,
+        message: "邮箱不能为空",
+        content: null
+      })
+    }
+    if(!mobile) {
+      return res.status(400).json({
+        code: 1,
+        message: "手机号不能为空",
+        content: null
+      })
+    }
+    if(!password) {
+      return res.status(400).json({
+        code: 1,
+        message: "密码不能为空",
+        content: null
+      })
+    }
+    if(typeof isAdmin !== 'number') {
+      return res.status(400).json({
+        code: 1,
+        message: "是否管理员参数错误",
+        content: null
+      })
+    }
+    // 检查邮箱和手机号是否已存在
+    const [existingUser] = await pool.query(
+      "SELECT * FROM user_info.info WHERE email = ? OR mobile = ?",
+      [email, mobile]
+    );
+    if(existingUser.length > 0) {
+      if(existingUser[0].email === email) {
+        return res.status(400).json({
+          code: 1,
+          message: "该邮箱已被注册",
+          content: null
+        })
+      }
+      if(existingUser[0].mobile === mobile) {
+        return res.status(400).json({
+          code: 1,
+          message: "该手机号已被注册",
+          content: null
+        })
+      }
+    }
+    const [result] = await pool.query(
+      "INSERT INTO user_info.info (name, email, mobile, password, isAdmin) VALUES (?,?,?,?,?)",
+      [name, email, mobile, password, isAdmin || 0]
+    )
+    if(result.affectedRows === 1) {
+      return res.status(200).json({
+        code: 0,
+        message: "用户创建成功",
+        content: null
+      })
+    }else {
+      return res.status(400).json({
+        code: 1,
+        message: "用户创建失败",
         content: null
       })
     }

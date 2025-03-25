@@ -1,5 +1,10 @@
+import { getToken } from "../auth";
+import { removeSelectedMenuKey } from "../menu";
 export function setupCacheClear() {
+  const token = getToken();
   window.addEventListener('beforeunload', () => {
-    localStorage.removeItem('selected-menu-key');
+    if (!token) {
+      removeSelectedMenuKey();
+    }
   });
 }

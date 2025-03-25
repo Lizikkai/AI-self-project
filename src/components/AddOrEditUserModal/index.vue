@@ -1,11 +1,11 @@
 <template>
   <Modal
     v-model:open="open"
-    :title="props.id ? '编辑用户' : '添加用户'"
+    :title="isEdit ? '编辑用户' : '添加用户'"
     @ok="handleOk"
     @cancel="handleCancel"
   >
-    <div v-if="!loading" class="z-99 absolute top-0 bottom-0 left-0 right-0 flex flex-items-center justify-center bg-white bg-opacity-50">
+    <div v-if="isEdit && !loading" class="z-99 absolute top-0 bottom-0 left-0 right-0 flex flex-items-center justify-center bg-white bg-opacity-50">
       <Spin />
     </div>
     <Form class="mt-8" :model="formState" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }">
@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
   import { Modal, Form, FormItem, Input, Switch, Spin } from 'ant-design-vue'
-  import { ref, reactive, watch } from 'vue'
+  import { ref, reactive, watch, computed } from 'vue'
   import { getUserInfo } from '@/api'
 
   type IFormState = {
@@ -47,6 +47,9 @@
     password?: string
     isAdmin: boolean
   }
+  const isEdit = computed(() => {
+    return !!props.id
+  })
   const loading = ref<boolean>(false)
   const props = defineProps({
     id: Number

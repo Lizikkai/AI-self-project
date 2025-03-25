@@ -57,3 +57,12 @@ export function deleteUserByAdmin(params: PrimaryKey) {
     method: "delete",
   })
 }
+
+/** 管理员创建用户 */
+export function createUserByAdmin(data: Types.ICreateUserByAdminParams): Promise<unknown>  {
+  return request({
+    url: '/admin/create',
+    method: 'put',
+    data
+  })
+}
