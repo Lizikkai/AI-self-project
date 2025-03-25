@@ -5,7 +5,8 @@ interface MenuRoutes {
 export const menuRoutes:MenuRoutes = {
   'info': '/info',
   'home': '/home',
-  'user': '/user'
+  'user': '/user',
+  'demo': '/demo'
 }
 
-export const whiteList:string[] = ['/login', '/register']
+export const whiteList:string[] = ['/login', '/register','/404', '/demo']

@@ -8,12 +8,15 @@ import App from './App.vue'
 import './style.css'
 import 'virtual:uno.css';
 import { setupCacheClear } from '@/utils/app/clear'
+import { MotionPlugin } from '@vueuse/motion'
+
 
 const app = createApp(App);
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate)
+app.use(MotionPlugin);
 app.use(pinia);
 app.use(router);
 app.use(Antd);
 app.mount('#app')
-setupCacheClear()
+// setupCacheClear()

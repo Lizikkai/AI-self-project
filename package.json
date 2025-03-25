@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
     "@types/lodash-es": "^4.17.12",
+    "@vueuse/motion": "^3.0.3",
     "ant-design-vue": "4.x",
     "axios": "^1.8.3",
     "lodash-es": "^4.17.21",

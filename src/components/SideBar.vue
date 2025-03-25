@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[12%] menu">
+  <div class="w-[14%] menu">
     <Menu mode="vertical" theme="dark" v-model:selectedKeys="selectedKeys" @select="handleSelectMenu">
       <MenuItem key="info">
         <template #icon>
@@ -18,6 +18,12 @@
           <HomeOutlined />
         </template>
         <span>主页</span>
+      </MenuItem>
+      <MenuItem key="demo">
+        <template #icon>
+          <HomeOutlined />
+        </template>
+        <span>小样</span>
       </MenuItem>
     </Menu>
   </div>
@@ -42,22 +48,21 @@
       setSelectedMenuKey(menuKey)
     }
 
-    // 初始化
-    onMounted(() => {
-      const savedKey = getSelectedMenuKey()
-      if (savedKey) {
-        selectedKeys.value = [savedKey]
-        const targetRoute = menuRoutes[savedKey]
-        if (targetRoute && route.path !== targetRoute) {
-          router.push(targetRoute)
-        }
-      } else if (route.path === '/') {
-        router.push('/info')
-        updateMenuState('info')
-      } else {
-        updateMenuState(route.path)
-      }
-    })
+    // // 初始化
+    // onMounted(() => {
+    //   const savedKey = getSelectedMenuKey()
+    //   if (savedKey) {
+    //     console.log(savedKey)
+    //     selectedKeys.value = [savedKey]
+    //     const targetRoute = menuRoutes[savedKey]
+    //     console.log(targetRoute)
+    //     if (targetRoute && route.path !== targetRoute) {
+    //       router.push(targetRoute)
+    //     }
+    //   }  else {
+    //     updateMenuState(route.path)
+    //   }
+    // })
 
     // 监听路由变化
     watch(() => route.path, (newPath) => {
