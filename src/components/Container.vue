@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Header />
-    <div class="flex flex-row flex-items-start">
+    <div class="flex flex-row flex-items-start content">
       <SideBar />
       <div class="flex-1">
         <Content>
@@ -23,6 +23,6 @@
     min-width: 100%;
     min-height: 100vh;
     font-family: "Source Han Sans CN";
-    padding-top: 46px;
+    /* padding-top: 46px; */
   }
 </style>

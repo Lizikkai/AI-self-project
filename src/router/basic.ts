@@ -6,7 +6,7 @@ export const menuRoutes:MenuRoutes = {
   'info': '/info',
   'home': '/home',
   'user': '/user',
-  'demo': '/demo'
+  'conversation': '/conversation'
 }
 
-export const whiteList:string[] = ['/login', '/register','/404', '/demo']
+export const whiteList:string[] = ['/login', '/register','/404', '/conversation']

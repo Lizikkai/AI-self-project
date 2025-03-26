@@ -19,11 +19,11 @@
         </template>
         <span>主页</span>
       </MenuItem>
-      <MenuItem key="demo">
+      <MenuItem key="conversation">
         <template #icon>
-          <HomeOutlined />
+          <CommentOutlined />
         </template>
-        <span>小样</span>
+        <span>AI对话</span>
       </MenuItem>
     </Menu>
   </div>
@@ -31,7 +31,7 @@
 
 <script setup lang="ts">
     import { Menu, MenuItem, MenuDivider } from "ant-design-vue";
-    import { SmileOutlined, HomeOutlined, UserOutlined } from "@ant-design/icons-vue";
+    import { SmileOutlined, HomeOutlined, UserOutlined, CommentOutlined } from "@ant-design/icons-vue";
     import { ref, watch, onMounted } from 'vue'
     import { menuRoutes } from '@/router/basic'
     import { useRouter, useRoute } from 'vue-router'
@@ -83,6 +83,8 @@
       height: 100vh;
       // background: lightpink;
       background-color: #001427;
+      padding-top: 60px;
+      box-sizing: border-box;
       .ant-menu {
         border-inline-end: none !important;
      }

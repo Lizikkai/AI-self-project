@@ -31,9 +31,9 @@ const router = createRouter({
       component: () => import('@/views/info/users.vue')
     },
     {
-      path: '/demo',
-      name: 'DemoPage',
-      component: () => import('@/views/demo/index.vue')
+      path: '/conversation',
+      name: 'ConversationPage',
+      component: () => import('@/views/conversation/index.vue')
     },
     {
       path: '/404',

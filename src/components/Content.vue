@@ -10,8 +10,9 @@
 
 <style scoped lang="less">
     .content {
-      height: calc(100vh - 40px);
+      height: 100vh;
       padding: 20px;
+      padding-top: 60px;
       box-sizing: border-box;
     }
 </style>

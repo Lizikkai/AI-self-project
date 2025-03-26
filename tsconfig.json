@@ -6,7 +6,7 @@
     "types": ["@types/node", "vite/client","vue"], // 明确包含所需类型
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"] // 路径别名（如果使用）
+      "@/*": ["src/*"], // 路径别名（如果使用）
     },
     "allowJs": true, // 允许编译 JS 文件
     "strict": true,

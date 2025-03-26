@@ -7,8 +7,10 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import App from './App.vue'
 import './style.css'
 import 'virtual:uno.css';
-import { setupCacheClear } from '@/utils/app/clear'
 import { MotionPlugin } from '@vueuse/motion'
+import 'highlight.js/styles/stackoverflow-light.css'
+import 'highlight.js/lib/common';
+import hljsVuePlugin from "@highlightjs/vue-plugin";
 
 
 const app = createApp(App);
@@ -18,5 +20,6 @@ app.use(MotionPlugin);
 app.use(pinia);
 app.use(router);
 app.use(Antd);
+app.use(hljsVuePlugin);
 app.mount('#app')
 // setupCacheClear()

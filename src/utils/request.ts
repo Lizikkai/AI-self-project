@@ -8,10 +8,10 @@ import { removeSelectedMenuKey } from '@/utils/menu'
 // 创建 axios 实例
 const request = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000,   // 请求超时时间
+  timeout: 15000,   // 请求超时时间
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
 })
 
 // 请求拦截器
