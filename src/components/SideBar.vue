@@ -1,18 +1,6 @@
 <template>
   <div class="w-[14%] menu">
     <Menu mode="vertical" theme="dark" v-model:selectedKeys="selectedKeys" @select="handleSelectMenu">
-      <MenuItem key="info">
-        <template #icon>
-          <SmileOutlined />
-        </template>
-        <span>个人信息</span>
-      </MenuItem>
-      <MenuItem key="user">
-        <template #icon>
-          <UserOutlined />
-        </template>
-        <span>用户列表</span>
-      </MenuItem>
       <MenuItem key="home">
         <template #icon>
           <HomeOutlined />
@@ -24,6 +12,18 @@
           <CommentOutlined />
         </template>
         <span>AI对话</span>
+      </MenuItem>
+      <MenuItem key="info">
+        <template #icon>
+          <SmileOutlined />
+        </template>
+        <span>个人信息</span>
+      </MenuItem>
+      <MenuItem key="user">
+        <template #icon>
+          <UserOutlined />
+        </template>
+        <span>用户列表</span>
       </MenuItem>
     </Menu>
   </div>
@@ -39,11 +39,11 @@
   
     const router = useRouter()
     const route = useRoute()
-    const selectedKeys = ref<string[]>(['info'])
+    const selectedKeys = ref<string[]>(['home'])
 
     // 统一处理路由和菜单选中状态
     function updateMenuState(path: string) {
-      const menuKey = path.replace('/', '') || 'info'
+      const menuKey = path.replace('/', '') || 'home'
       selectedKeys.value = [menuKey]
       setSelectedMenuKey(menuKey)
     }

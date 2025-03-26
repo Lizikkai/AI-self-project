@@ -37,7 +37,7 @@ export const useUserInfo = defineStore("userInfo", {
             ..._data
           };
           router.replace({
-            name: "InfoPage"
+            name: "HomePage"
           })
         }
       } catch(error) {
@@ -54,7 +54,7 @@ export const useUserInfo = defineStore("userInfo", {
             ..._data,
           };
           router.replace({
-            name: "InfoPage"
+            name: "HomePage"
           })
         }
       } catch (error) {

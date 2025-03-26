@@ -67,8 +67,8 @@
     }
 
     function handleToProfile() {
-      setSelectedMenuKey('info')
-      router.push({ name: 'InfoPage' })
+      setSelectedMenuKey('home')
+      router.push({ name: 'HomePage' })
     }
 </script>
 
