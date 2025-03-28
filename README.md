@@ -6,7 +6,8 @@
 
 - 前端框架：Vue 3
 - 构建工具：Vite
-- UI 组件库：Ant Design Vue
+- UI 组件库: Ant Design Vue
+- UI 组件库: Element-Plus-X
 - 状态管理：Pinia
 - 路由管理：Vue Router
 - HTTP 请求：Axios
