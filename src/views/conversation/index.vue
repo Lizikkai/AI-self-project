@@ -1,68 +1,68 @@
 <template>
   <div class="chat-container flex flex-col justify-between">
-    <!-- 聊天消息显示区域 -->
-    <div class="messages-container" ref="messagesContainer">
-      <div
-        class="flex flex-items-start gap-4"
-        :class="msg.role === 'user' ? 'justify-end' : ''"
-        v-for="(msg, index) in messages"
-        :key="index"
-      >
-        <template v-if="msg.role === 'user'">
-          <!-- 将头像放在右侧 -->
-          <div :class="msg.role" class="message-content">{{ msg.content }}</div>
+    <div class="p-4 box-border">
+      <BubbleList ref="bubbleListRef" :list="list" :max-height="`736px`">
+        <template #avatar="{ item }">
+          <div class="avatar-wrapper">
+            <img
+              :src="
+                item.role === 'ai'
+                  ? 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'
+                  : 'https://avatars.githubusercontent.com/u/76239030?v=4'
+              "
+              alt="avatar"
+            />
+          </div>
         </template>
-        <template v-else>
-          <Avatar class="flex-none">
-            <template #icon><UserOutlined /></template>
-          </Avatar>
-          <template v-if="msg.includeCode">
-            <div
-              :class="msg.role"
-              class="message-content"
-              v-html="marked(msg.content)"
-              v-highlight
-            ></div>
-          </template>
-          <template v-else>
-            <div :class="msg.role" class="message-content">{{ msg.content }}</div>
-          </template>
+        <template #header="{ item }">
+          <div class="header-wrapper">
+            <div class="header-name">
+              {{ item.role === 'ai' ? '千问' : '🧁 我' }}
+            </div>
+          </div>
         </template>
-      </div>
-      <div v-if="loading" class="loading-indicator">
-        <div class="dot-flashing"></div>
-      </div>
+        <template #content="{ item }">
+          <div class="content-wrapper">
+            <div class="content-text">
+              <Typewriter :content="item.content!" :isMarkdown="item.isMarkdown" :typing="true" />
+            </div>
+          </div>
+        </template>
+        <template #loading="{ item }">
+          <LoadingOutlined v-if="item.loading" />
+        </template>
+      </BubbleList>
     </div>
-
     <!-- 输入区域 -->
-    <div class="input-area">
-      <InputGroup compact>
-        <Input
-          v-model:value="inputMessage"
-          style="width: 80%"
-          placeholder="请输入您的问题..."
-          @keyup.enter="handleSendMessage"
-        />
-        <Button type="primary" @click="handleSendMessage" :loading="loading">发送</Button>
-      </InputGroup>
-    </div>
+    <Sender :disabled="loading" :loading="loading" placeholder="请输入提问的关键词~" v-model:value="inputMessage" @submit="handleSendMessage" />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, nextTick } from 'vue'
-  import { Input, InputGroup, Avatar, message, Button } from 'ant-design-vue'
+  import { message } from 'ant-design-vue'
   import { getToken, removeToken } from '../../utils/auth'
-  import { marked } from 'marked'
-  import { UserOutlined } from '@ant-design/icons-vue'
+  import { LoadingOutlined } from '@ant-design/icons-vue'
   import { removeSelectedMenuKey } from '../../utils/menu'
   import { useRouter } from 'vue-router'
+  import { useFetch } from '@vueuse/core'
+  import { BubbleList, Sender, Typewriter } from 'vue-element-plus-x'
+  import type {
+    BubbleListItemProps,
+    BubbleListProps
+  } from 'vue-element-plus-x/types/components/BubbleList/types'
 
+  type listType = BubbleListItemProps & {
+    key: number
+    role: 'user' | 'ai'
+  }
+  const bubbleListRef = ref()
   const router = useRouter()
   const inputMessage = ref('')
-  const messages = ref<
-    Array<{ role: 'user' | 'assistant'; content: string; includeCode: boolean }>
-  >([])
+  const list = ref<BubbleListProps<listType>['list']>([])
+  // const messages = ref<
+  //   Array<{ role: 'user' | 'assistant'; content: string;  }>
+  // >([])
   const loading = ref(false)
   const messagesContainer = ref<HTMLElement | null>(null)
 
@@ -107,22 +107,54 @@
       return
     }
 
+    function isMarkdownContent(text: string): boolean {
+      // 检查是否包含常见的 markdown 语法
+      const markdownPatterns = [
+        /```[\s\S]*?```/, // 代码块
+        /\[.*?\]\(.*?\)/, // 链接
+        /\*\*.*?\*\*/, // 粗体
+        /\*.*?\*/, // 斜体
+        /#{1,6}\s.*/, // 标题
+        /^\s*[-*+]\s/, // 无序列表
+        /^\s*\d+\.\s/, // 有序列表
+        /^\s*>\s/, // 引用
+        /`.*?`/, // 行内代码
+        /\|.*\|.*\|/, // 表格
+      ]
+
+      return markdownPatterns.some(pattern => pattern.test(text))
+    }
+
     // 添加用户消息
-    messages.value.push({
+    list.value.push({
       role: 'user',
       content: inputMessage.value,
-      includeCode: false
+      key: Date.now(),
+      placement: 'end',
+      avatar: 'https://avatars.githubusercontent.com/u/76239030?v=4',
+      avatarSize: '24px',
+      isMarkdown: false,
+      typing: false,
+      loading: false,
+      noStyle: true
     })
 
     // 准备接收AI回复
     loading.value = true
 
     // 创建一个空的AI回复占位
-    const aiMessageIndex = messages.value.length
-    messages.value.push({
-      role: 'assistant',
+    const aiMessageIndex = list.value.length
+    list.value.push({
+      role: 'ai',
       content: '',
-      includeCode: false
+      key: Date.now(),
+      placement: 'start',
+      avatar: 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
+      avatarSize: '24px',
+      isMarkdown: false,
+      typing: true,
+      loading: true,
+      noStyle: true
     })
 
     // 滚动到底部
@@ -131,20 +163,20 @@
     // 使用fetch API发送请求
     const url = '/api/ai/chat'
     try {
-      const response = await fetch(url, {
+      const { response } = await useFetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `${token}`
         },
         body: JSON.stringify({ message: inputMessage.value })
       })
-
-      if (!response.ok) {
+      console.log('response', response.value)
+      if (!response.value?.ok) {
         throw new Error('请求失败')
       }
 
-      const reader = response.body?.getReader()
+      const reader = response.value.body?.getReader()
       const decoder = new TextDecoder('utf-8')
 
       while (true) {
@@ -158,21 +190,26 @@
           if (line.startsWith('data:')) {
             const data = JSON.parse(line.substring(5))
             if (data.content) {
-              messages.value[aiMessageIndex].content += data.content
-              messages.value[aiMessageIndex].includeCode = true
+              list.value[aiMessageIndex].content += data.content
+              if(isMarkdownContent(list.value[aiMessageIndex].content as string)) {
+                list.value[aiMessageIndex].isMarkdown = true
+              }
               scrollToBottom()
             }
             if (data.done) {
               loading.value = false
+              list.value[aiMessageIndex].loading = false
             }
             if (data.error) {
               console.error('接收到错误:', data.error)
               message.error(data.error || '接收消息时发生错误')
               loading.value = false
+              list.value[aiMessageIndex].loading = false
             }
           }
         })
       }
+      console.log('messages', list.value)
     } catch (error) {
       console.error('请求错误:', error)
       message.error('连接服务器时发生错误')
@@ -183,14 +220,20 @@
     inputMessage.value = ''
   }
 
-  // 滚动到底部
   function scrollToBottom() {
-    nextTick(() => {
-      if (messagesContainer.value) {
-        messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-      }
-    })
+    if(bubbleListRef.value) {
+      bubbleListRef.value.scrollToBottom()
+    }
   }
+
+  // 滚动到底部
+  // function scrollToBottom() {
+  //   nextTick(() => {
+  //     if (messagesContainer.value) {
+  //       messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+  //     }
+  //   })
+  // }
 </script>
 
 <style scoped>
@@ -311,6 +354,34 @@
     50%,
     100% {
       background-color: rgba(91, 192, 222, 0.2);
+    }
+  }
+</style>
+
+<style lang="less" scoped>
+  .avatar-wrapper {
+    width: 40px;
+    height: 40px;
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
+  .header-wrapper {
+    .header-name {
+        font-size: 14px;
+        color: #979797;
+    }
+  }
+  .content-wrapper {
+    .content-text {
+        font-size: 14px;
+        color: #333;
+        padding: 12px;
+        background: linear-gradient(to right, #fdfcfb 0%, #ffd1ab 100%);
+        border-radius: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
   }
 </style>
